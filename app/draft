@@ -1,0 +1,55 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+import datetime
+
+app = FastAPI()
+
+# Define a model for the request body
+class DeliveryRequest(BaseModel):
+    cart_value: float
+    delivery_distance: int
+    number_of_items: int
+    time: str
+
+@app.post("/calculate_fee")
+async def calculate_fee(request: DeliveryRequest):
+    # Extract values from the request
+    cart_value = request.cart_value
+    delivery_distance = request.delivery_distance
+    number_of_items = request.number_of_items
+    time = datetime.datetime.strptime(request.time, "%Y-%m-%dT%H:%M:%S")
+
+    # Initialize delivery fee
+    delivery_fee = 0
+
+    # Check if cart value is less than 10€
+    if cart_value < 10:
+        delivery_fee += 10 - cart_value
+
+    # Calculate delivery fee based on distance
+    if delivery_distance > 1000:
+        delivery_fee += 2 + ((delivery_distance - 1000) // 500) * 1
+    else:
+        delivery_fee += 2
+
+    # Calculate surcharge for number of items
+    if number_of_items >= 5:
+        if number_of_items > 12:
+            delivery_fee += ((number_of_items - 4) * 0.5) + 1.2
+        else:
+            delivery_fee += (number_of_items - 4) * 0.5
+
+    # Check for Friday rush
+    if time.weekday() == 4 and 15 <= time.hour < 19:  # 4 is Friday
+        delivery_fee *= 1.2
+
+    # Check if delivery fee exceeds 15€
+    if delivery_fee > 15:
+        delivery_fee = 15
+
+    # Check if cart value is equal or more than 200€
+    if cart_value >= 200:
+        delivery_fee = 0
+
+    # Return the calculated delivery fee
+    return {"delivery_fee": delivery_fee}
