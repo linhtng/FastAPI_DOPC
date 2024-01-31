@@ -5,6 +5,10 @@ from .calculator import DeliveryCalculator
 
 app = FastAPI(title="Delivery Fee API")
 
+@app.get("/")
+def index():
+    return {"Hello": "Welcome to the Delivery Fee API!"}
+
 @app.post("/calculate_delivery_fee", response_model=DeliveryResponse)
 def calculate_delivery_fee(request: DeliveryRequest):
     """
