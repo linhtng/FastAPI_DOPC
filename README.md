@@ -46,7 +46,7 @@ The API documentation is available in http://127.0.0.1:8000/docs.
 
 #### Tests
 ```
-docker compose run delivery-fee-api pytest
+docker compose run DOPC pytest
 ```
 
 ### Without Docker

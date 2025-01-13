@@ -1,6 +1,5 @@
-version: "3.9"
 services:
-  delivery-fee-api:
+  DOPC:
     build: .
     ports:
       - 127.0.0.1:8000:8000
