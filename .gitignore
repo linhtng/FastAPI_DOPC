@@ -1,5 +1,15 @@
 app/__pycache__/
 tests/__pycache__/
+__pycache__/
+.mypy_cache
+
+*.py[cod]
+*$py.class
+.Python
+pytest_cache/
+.coverage
+htmlcov/
+.DS_Store
 
 # Environments
 .env
