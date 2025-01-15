@@ -2,6 +2,7 @@ app/__pycache__/
 tests/__pycache__/
 __pycache__/
 .mypy_cache
+logs/
 
 *.py[cod]
 *$py.class
