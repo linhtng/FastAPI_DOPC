@@ -16,6 +16,18 @@ venue_service = VenueService()
 
 async def read_params(filter_query: DeliveryQueryParams) -> DeliveryQueryParams:
     logger.info(f"Received query parameters: {filter_query}")
+    # Validate cart value
+    if filter_query.cart_value == 0:
+        logger.error("Cart value cannot be zero")
+        raise HTTPException(status_code=400, detail="Cart value cannot be zero")
+
+    # Check for integer overflow (assuming reasonable max value in cents)
+    MAX_CART_VALUE = 1000000 * 100  # 1 million euros in cents
+    if filter_query.cart_value > MAX_CART_VALUE:
+        logger.error(f"Cart value exceeds maximum allowed: {filter_query.cart_value}")
+        raise HTTPException(
+            status_code=400, detail=f"Cart value cannot exceed {MAX_CART_VALUE} cents"
+        )
     return filter_query
 
 
@@ -76,7 +88,7 @@ async def handle_delivery_price(filter_query: Annotated[DeliveryQueryParams, Que
         result = await DeliveryFeeCalculator(
             params, static_data, dynamic_data, distance
         )
-        # return result
+        return result
     except HTTPException as e:
         logger.error(f"Error processing request: {e.detail}")
         raise e

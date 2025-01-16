@@ -6,6 +6,7 @@ from .models import (
     VenueDynamic,
     DeliveryPriceResponse,
     DistanceRange,
+    DeliveryFeeInfo,
 )
 from .logging import logger
 
@@ -64,7 +65,7 @@ async def DeliveryFeeCalculator(
     static_data: VenueStatic,
     dynamic_data: VenueDynamic,
     distance: int,
-) -> int:
+) -> DeliveryPriceResponse:
 
     delivery_specs = dynamic_data.delivery_specs
 
@@ -93,10 +94,9 @@ async def DeliveryFeeCalculator(
         f"total={total_price}"
     )
 
-    return total_price
-    # return DeliveryPriceResponse(
-    #     total_price=params.cart_value + delivery_fee,
-    #     small_order_surcharge=0,  # TODO: Implement
-    #     cart_value=params.cart_value,
-    #     delivery=DeliveryFeeInfo(fee=delivery_fee, distance=distance),
-    # )
+    return DeliveryPriceResponse(
+        total_price=total_price,
+        small_order_surcharge=small_order_surcharge,
+        cart_value=params.cart_value,
+        delivery=DeliveryFeeInfo(fee=delivery_fee, distance=distance),
+    )
