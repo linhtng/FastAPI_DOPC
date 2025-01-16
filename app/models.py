@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # from decimal import Decimal
 from typing import List, Optional, Tuple
@@ -44,8 +44,10 @@ class VenueCoordinates(BaseModel):
 
 
 class DistanceRange(BaseModel):
-    min: int = Field(..., description="Minimum distance in meters")
-    max: int = Field(..., description="Maximum distance in meters (0 = unavailable)")
+    min: int = Field(..., ge=0, description="Minimum distance in meters")
+    max: int = Field(
+        ..., ge=0, description="Maximum distance in meters (0 = unavailable)"
+    )
     a: int = Field(..., description="Base fee addition")
     b: int = Field(..., description="Distance multiplier")
     flag: Optional[str] = None
@@ -57,6 +59,37 @@ class DeliverySpecs(BaseModel):
     )
     base_price: int = Field(..., description="Base price")
     distance_ranges: List[DistanceRange]
+    # delivery_distance_max: int = Field(ge=0, description="Maximum delivery distance")
+
+    @field_validator("distance_ranges")
+    def validate_distance_ranges(
+        cls, ranges: List[DistanceRange]
+    ) -> List[DistanceRange]:
+        if not ranges:
+            raise ValueError("Distance ranges cannot be empty")
+        # Check first range starts at 0
+        if ranges[0].min != 0:
+            raise ValueError("First distance range must start at min=0")
+        # Check last range ends with max=0
+        if ranges[-1].max != 0:
+            raise ValueError("Last distance range must end with max=0")
+        # if ranges[-1].min != 0:
+        #     delivery_distance_max = ranges[-1].min
+        # Check ranges are sorted and continuous
+        for i in range(1, len(ranges)):
+            prev_range = ranges[i - 1]
+            curr_range = ranges[i]
+            # Check sorting
+            if curr_range.min <= prev_range.min:
+                raise ValueError("Distance ranges must be sorted by min value")
+            # Check continuity
+            if curr_range.min != prev_range.max:
+                raise ValueError(
+                    f"Range gap found: range[{i-1}].max ({prev_range.max}) != "
+                    f"range[{i}].min ({curr_range.min})"
+                )
+
+        return ranges
 
 
 class VenueStatic(BaseModel):
