@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query, HTTPException
 from .models import DeliveryQueryParams
 from .logging import logger
 from .dopc_distance import DistanceCalculator
+from .delivery_fee_calculator import DeliveryFeeCalculator
 
 # from .calculator import DeliveryCalculator
 
@@ -55,7 +56,6 @@ async def validate_delivery_distance(
 
     # Get maximum allowed distance
     max_range = dynamic_data.delivery_specs.distance_ranges[-1].min
-    logger.info(f"Max range: {max_range}m")
 
     if distance >= max_range:
         raise HTTPException(
@@ -66,20 +66,16 @@ async def validate_delivery_distance(
     return distance
 
 
-async def DeliveryFeeCalculator(params: DeliveryQueryParams, static_data, dynamic_data):
-    # TODO: Implement calculation logic
-    logger.info("Calculating delivery price")
-    return {"price": 0}  # placeholder
-
-
 @app.get("/api/v1/delivery-order-price")
 async def handle_delivery_price(filter_query: Annotated[DeliveryQueryParams, Query()]):
     try:
         params = await read_params(filter_query)
         static_data, dynamic_data = await fetch_venue_data(params.venue_slug)
         distance = await validate_delivery_distance(params, static_data, dynamic_data)
-        logger.info(f"Calculated delivery distance: {distance}m")
-        # result = await DeliveryFeeCalculator(params, static_data, dynamic_data)
+
+        result = await DeliveryFeeCalculator(
+            params, static_data, dynamic_data, distance
+        )
         # return result
     except HTTPException as e:
         logger.error(f"Error processing request: {e.detail}")
