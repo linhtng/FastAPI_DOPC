@@ -55,7 +55,7 @@ class DeliverySpecs(BaseModel):
     order_minimum_no_surcharge: int = Field(
         ..., description="Minimum cart value to avoid surcharge"
     )
-    delivery_pricing: dict = Field(..., description="Delivery pricing rules")
+    base_price: int = Field(..., description="Base price")
     distance_ranges: List[DistanceRange]
 
 

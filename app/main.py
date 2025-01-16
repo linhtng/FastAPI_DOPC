@@ -1,17 +1,11 @@
 from fastapi import FastAPI, Query, HTTPException
 from .models import DeliveryQueryParams
-from loguru import logger
+from .logging import logger
 
 # from .calculator import DeliveryCalculator
 
 from typing import Annotated
 from .venue_service import VenueService
-
-
-# Configure logger
-logger.add(
-    "logs/app.log", rotation="500 MB", level="INFO", format="{time} {level} {message}"
-)
 
 app = FastAPI(title="Delivery Order Price Calculator (DOPC)")
 
@@ -24,10 +18,27 @@ async def read_params(filter_query: DeliveryQueryParams) -> DeliveryQueryParams:
 
 
 async def fetch_venue_data(venue_slug: str):
-    static_data = await venue_service.get_venue_static(venue_slug)
-    dynamic_data = await venue_service.get_venue_dynamic(venue_slug)
-    logger.info(f"Fetched venue data: static={static_data}, dynamic={dynamic_data}")
-    return static_data, dynamic_data
+    try:
+        static_data = await venue_service.get_venue_static(venue_slug)
+        dynamic_data = await venue_service.get_venue_dynamic(venue_slug)
+        logger.info(f"Fetched venue data: static={static_data}, dynamic={dynamic_data}")
+        return static_data, dynamic_data
+
+    except HTTPException as e:
+        logger.error(f"HTTP error fetching venue data: {e.detail}")
+        raise HTTPException(
+            status_code=e.status_code, detail=f"Error fetching venue data: {e.detail}"
+        )
+    except ValueError as e:
+        logger.error(f"Invalid venue data: {str(e)}")
+        raise HTTPException(
+            status_code=422, detail=f"Invalid venue data format: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Internal server error while fetching venue data"
+        )
 
 
 async def calculate_price(params: DeliveryQueryParams, static_data, dynamic_data):
