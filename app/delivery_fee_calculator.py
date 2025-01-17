@@ -9,6 +9,7 @@ from .models import (
     DeliveryFeeInfo,
 )
 from .logging import logger
+from . import constants
 
 
 def calculate_distance_fee(
@@ -30,7 +31,9 @@ def calculate_distance_fee(
 
     # Calculate fee components
     constant_fee = applicable_range.a
-    distance_based_fee = round(applicable_range.b * distance / 10)
+    distance_based_fee = round(
+        applicable_range.b * distance / constants.DISTANCE_FEE_DIVISOR
+    )
     total_distance_fee = base_price + constant_fee + distance_based_fee
 
     logger.info(

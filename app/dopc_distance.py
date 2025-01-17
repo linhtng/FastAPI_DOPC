@@ -1,10 +1,10 @@
 from math import radians, cos, sin, asin, sqrt
 from typing import Tuple
 from .logging import logger
+from . import constants
 
 
 class DistanceCalculator:
-    EARTH_RADIUS = 6371000  # meters
 
     @staticmethod
     def calculate_straight_line(
@@ -28,6 +28,6 @@ class DistanceCalculator:
         c = 2 * asin(sqrt(a))
 
         # Calculate distance in meters
-        distance = int(c * DistanceCalculator.EARTH_RADIUS)
+        distance = int(c * constants.EARTH_RADIUS)
         logger.debug(f"Calculated distance: {distance}m")
         return distance

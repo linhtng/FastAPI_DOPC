@@ -3,11 +3,9 @@ from .models import DeliveryQueryParams
 from .logging import logger
 from .dopc_distance import DistanceCalculator
 from .delivery_fee_calculator import DeliveryFeeCalculator
-
-# from .calculator import DeliveryCalculator
-
 from typing import Annotated
 from .venue_service import VenueService, VenueStatic, VenueDynamic
+from .constants import MAX_CART_VALUE, DOPC_ENDPOINT
 
 app = FastAPI(title="Delivery Order Price Calculator (DOPC)")
 
@@ -22,7 +20,6 @@ async def read_params(filter_query: DeliveryQueryParams) -> DeliveryQueryParams:
         raise HTTPException(status_code=400, detail="Cart value cannot be zero")
 
     # Check for integer overflow (assuming reasonable max value in cents)
-    MAX_CART_VALUE = 1000000 * 100  # 1 million euros in cents
     if filter_query.cart_value > MAX_CART_VALUE:
         logger.error(f"Cart value exceeds maximum allowed: {filter_query.cart_value}")
         raise HTTPException(
@@ -41,7 +38,7 @@ async def fetch_venue_data(venue_slug: str):
     except HTTPException as e:
         logger.error(f"HTTP error fetching venue data: {e.detail}")
         raise HTTPException(
-            status_code=e.status_code, detail=f"Error fetching venue data: {e.detail}"
+            status_code=502, detail=f"Error fetching venue data: {e.detail}"
         )
     except ValueError as e:
         logger.error(f"Invalid venue data: {str(e)}")
@@ -88,7 +85,7 @@ async def validate_delivery_distance(
     return distance
 
 
-@app.get("/api/v1/delivery-order-price")
+@app.get(DOPC_ENDPOINT)
 async def handle_delivery_price(filter_query: Annotated[DeliveryQueryParams, Query()]):
     try:
         params = await read_params(filter_query)

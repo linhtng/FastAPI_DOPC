@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # from decimal import Decimal
 from typing import List, Optional, Tuple
+from . import constants
 
 
 class DeliveryQueryParams(BaseModel):
@@ -9,8 +10,8 @@ class DeliveryQueryParams(BaseModel):
 
     venue_slug: str
     cart_value: int = Field(ge=0)
-    user_lat: float = Field(gt=-90, le=90)
-    user_lon: float = Field(gt=-180, le=180)
+    user_lat: float = Field(ge=constants.MIN_LAT, le=constants.MAX_LAT)
+    user_lon: float = Field(ge=constants.MIN_LON, le=constants.MAX_LON)
 
 
 class DeliveryFeeInfo(BaseModel):
@@ -73,8 +74,6 @@ class DeliverySpecs(BaseModel):
         # Check last range ends with max=0
         if ranges[-1].max != 0:
             raise ValueError("Last distance range must end with max=0")
-        # if ranges[-1].min != 0:
-        #     delivery_distance_max = ranges[-1].min
         # Check ranges are sorted and continuous
         for i in range(1, len(ranges)):
             prev_range = ranges[i - 1]
