@@ -62,9 +62,19 @@ async def validate_delivery_distance(
     venue_coords = static_data.location.coordinates
     user_coords = (params.user_lon, params.user_lat)
 
+    if venue_coords == user_coords:
+        raise HTTPException(
+            status_code=400, detail="User and venue location are the same"
+        )
+
     # Calculate distance
     distance = DistanceCalculator.calculate_straight_line(venue_coords, user_coords)
     logger.info(f"Calculated delivery distance: {distance}m")
+    if distance == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Zero delivery distance. User and venue location are the same",
+        )
 
     # Get maximum allowed distance
     max_range = dynamic_data.delivery_specs.distance_ranges[-1].min
@@ -72,7 +82,7 @@ async def validate_delivery_distance(
     if distance >= max_range:
         raise HTTPException(
             status_code=400,
-            detail=f"Delivery distance {distance}m exceeds maximum allowed {max_range}m",
+            detail=f"Delivery distance {distance}m exceeds the max range {max_range - 1}m. Delivery not available",
         )
 
     return distance

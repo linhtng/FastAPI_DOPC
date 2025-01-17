@@ -19,11 +19,7 @@ def calculate_distance_fee(
     # Find applicable distance range
     applicable_range = None
     for range_spec in distance_ranges:
-        if range_spec.max == 0:  # Last range
-            if distance >= range_spec.min:
-                applicable_range = range_spec
-                break
-        elif range_spec.min <= distance < range_spec.max:
+        if range_spec.min <= distance < range_spec.max:
             applicable_range = range_spec
             break
 
