@@ -1,36 +1,29 @@
-# Wolt Summer 2024 Engineering Internships
-# Python Delivery Fee Calculator API
-Let's build the Delivery Fee Calculator API using Python and [FastAPI](https://fastapi.tiangolo.com/) as the web framework.
+# Wolt Summer 2025 Engineering Internships
+# Python Delivery Order Price Calculator (DOPC) API
+Let's build the Delivery Order Price Calculator (DOPC) API using Python and [FastAPI](https://fastapi.tiangolo.com/) as the web framework.
 
 ### Specification
-Implement an HTTP API (single POST endpoint) which calculates the delivery fee based on the information in the request payload (JSON) and includes the calculated delivery fee in the response payload (JSON).
+Implement an HTTP API (single GET endpoint) which calculates the delivery fee based on the information in the request query parameters. The response includes the calculated delivery fee in the response payload (JSON). In order to calculate the values needed for the response, DOPC should request data from Home Assignment API which is another imaginary backend service.
 
 #### Request
 Example: 
 ```json
-{"cart_value": 790, "delivery_distance": 2235, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}
+curl http://localhost:8000/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=60.17094&user_lon=24.93087
 ```
-
-##### Field details
-
-| Field             | Type  | Description                                                               | Example value                             |
-|:---               |:---   |:---                                                                       |:---                                       |
-|cart_value         |Integer|Value of the shopping cart __in cents__.                                   |__790__ (790 cents = 7.90€)                |
-|delivery_distance  |Integer|The distance between the store and customer’s location __in meters__.      |__2235__ (2235 meters = 2.235 km)          |
-|number_of_items    |Integer|The __number of items__ in the customer's shopping cart.                   |__4__ (customer has 4 items in the cart)   |
-|time               |String |Order time in UTC in [ISO format](https://en.wikipedia.org/wiki/ISO_8601). |__2024-01-15T13:00:00Z__                   |
 
 #### Response
 Example:
 ```json
-{"delivery_fee": 710}
+{
+  "total_price": 1190,
+  "small_order_surcharge": 0,
+  "cart_value": 1000,
+  "delivery": {
+    "fee": 190,
+    "distance": 177
+  }
+}
 ```
-
-##### Field details
-
-| Field         | Type  | Description                           | Example value             |
-|:---           |:---   |:---                                   |:---                       |
-|delivery_fee   |Integer|Calculated delivery fee __in cents__.  |__710__ (710 cents = 7.10€)|
 
 ## Development
 
@@ -39,14 +32,25 @@ Example:
 #### Running the app
 Run the app:
 ```
-docker compose up
+make
 ```
 
-The API documentation is available in http://127.0.0.1:8000/docs.
+The API documentation is available in http://127.0.0.1:8000/docs. Here you can test all endpoints directly from your browser and try out requests with different parameters.
+Alternative, you can launch Postman, set base URL: `http://127.0.0.1:8000` and add the following Configure Request:
+- Method: GET
+- Endpoint: `/api/v1/delivery-order-price`
+- Headers: 
+  - `Content-Type: application/json`
+
+Query Parameters: 
+venue_slug: string 
+cart_value: integer (in cents) 
+user_lat: float u
+ser_lon: float
 
 #### Tests
 ```
-docker compose run DOPC pytest
+make pytest
 ```
 
 ### Without Docker
@@ -81,5 +85,5 @@ The API documentation is available in http://127.0.0.1:8000/docs.
 
 #### Tests
 ```
-pytest
+pytest -v --capture=no --verbose
 ```
