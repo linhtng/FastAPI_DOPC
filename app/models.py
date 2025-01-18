@@ -8,7 +8,9 @@ from . import constants
 class DeliveryQueryParams(BaseModel):
     model_config = {"extra": "forbid"}
 
-    venue_slug: str
+    venue_slug: str = Field(
+        min_length=1,
+    )
     cart_value: int = Field(ge=0)
     user_lat: float = Field(ge=constants.MIN_LAT, le=constants.MAX_LAT)
     user_lon: float = Field(ge=constants.MIN_LON, le=constants.MAX_LON)
