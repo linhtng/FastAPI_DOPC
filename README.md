@@ -7,7 +7,7 @@ Implement an HTTP API (single GET endpoint) which calculates the delivery fee ba
 
 #### Request
 Example: 
-```json
+```
 curl http://localhost:8000/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=60.17094&user_lon=24.93087
 ```
 
@@ -42,11 +42,11 @@ Alternative, you can launch Postman, set base URL: `http://127.0.0.1:8000` and a
 - Headers: 
   - `Content-Type: application/json`
 
-Query Parameters: 
-venue_slug: string 
-cart_value: integer (in cents) 
-user_lat: float u
-ser_lon: float
+Query Parameters (**all are required**):
+* `venue_slug` (string): The unique identifier (slug) for the venue from which the delivery order will be placed
+* `cart_value`: (integer): The total value of the items in the shopping cart
+* `user_lat` (number with decimal point): The latitude of the user's location
+* `user_lon` (number with decimal point): The longitude of the user's location
 
 #### Tests
 ```
