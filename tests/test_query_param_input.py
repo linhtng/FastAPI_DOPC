@@ -1,6 +1,7 @@
 import pytest
 from fastapi import HTTPException
-from app.main import read_params, MAX_CART_VALUE
+
+from app.main import MAX_CART_VALUE, read_params
 from app.models import DeliveryQueryParams
 
 

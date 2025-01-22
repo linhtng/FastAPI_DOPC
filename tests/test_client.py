@@ -1,8 +1,10 @@
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
 from fastapi import HTTPException
-from app.venue_service import VenueService
+
 from app.http_client import HTTPClient
+from app.venue_service import VenueService
 
 
 @pytest.mark.asyncio

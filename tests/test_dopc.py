@@ -1,10 +1,10 @@
 import pytest
-from app.delivery_fee_calculator import (
-    calculate_distance_fee,
-    calculate_small_order_surcharge,
-    DeliveryFeeCalculator,
-)
-from app.models import DeliveryQueryParams, VenueStatic, VenueDynamic, DistanceRange
+
+from app.delivery_fee_calculator import (TotalFeeCalculator,
+                                         calculate_distance_fee,
+                                         calculate_small_order_surcharge)
+from app.models import (DeliveryQueryParams, DistanceRange, VenueDynamic,
+                        VenueStatic)
 
 
 @pytest.fixture
@@ -73,7 +73,7 @@ async def test_delivery_fee_calculator():
     distance = 600
 
     # Calculate
-    result = await DeliveryFeeCalculator(params, static_data, dynamic_data, distance)
+    result = await TotalFeeCalculator(params, static_data, dynamic_data, distance)
 
     # Assert
     assert result.total_price == 1359  # 800 + 359 + 200

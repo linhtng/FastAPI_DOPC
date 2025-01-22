@@ -1,8 +1,10 @@
+from unittest.mock import patch
+
 import pytest
 from fastapi import HTTPException
+
 from app.main import validate_delivery_distance
-from app.models import DeliveryQueryParams, VenueStatic, VenueDynamic
-from unittest.mock import patch
+from app.models import DeliveryQueryParams, VenueDynamic, VenueStatic
 
 
 @pytest.fixture

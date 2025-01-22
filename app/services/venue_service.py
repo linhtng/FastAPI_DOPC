@@ -1,8 +1,8 @@
-from .http_client import HTTPClient
-from .models import VenueStatic, VenueDynamic, VenueCoordinates, DeliverySpecs
-from .logging import logger
 from fastapi import HTTPException
-from .constants import VENUE_ENDPOINT
+from app.utils.logging import logger
+from app.utils.constants import VENUE_ENDPOINT
+from app.utils.http_client import HTTPClient
+from app.models.models import DeliverySpecs, VenueCoordinates, VenueDynamic, VenueStatic
 
 
 class VenueService:
@@ -26,18 +26,9 @@ class VenueService:
             return VenueStatic(
                 location=VenueCoordinates(coordinates=tuple(coordinates))
             )
-
-        except KeyError as e:
-            logger.error(f"Invalid response structure: {str(e)}")
-            raise HTTPException(
-                status_code=502, detail=f"Invalid response from venue service: {str(e)}"
-            )
         except HTTPException as e:
             # Re-raise HTTP exceptions with same status
             raise e
-        except Exception as e:
-            logger.error(f"Unexpected error fetching venue data: {str(e)}")
-            raise HTTPException(status_code=500, detail="Failed to fetch venue data")
 
     async def get_venue_dynamic(self, venue_slug: str) -> VenueDynamic:
         try:
@@ -57,9 +48,6 @@ class VenueService:
             logger.debug(f"Constructed delivery specs: {delivery_specs}")
             return VenueDynamic(delivery_specs=delivery_specs)
 
-        except ValueError as e:
-            logger.error(f"Distance range validation error: {str(e)}")
-            raise HTTPException(
-                status_code=422,
-                detail=f"Invalid distance ranges configuration: {str(e)}",
-            )
+        except HTTPException as e:
+            # Re-raise HTTP exceptions with same status
+            raise e
