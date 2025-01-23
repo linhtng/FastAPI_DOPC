@@ -1,20 +1,24 @@
-from math import asin, cos, radians, sin, sqrt
-from typing import Tuple
-
-from app.utils.logging import logger
+from math import asin, cos, sin, sqrt
+from app.models.models import GPSCoordinates
 from app.utils.constants import EARTH_RADIUS
 
 
 class DistanceCalculator:
     @staticmethod
-    def _calculate_haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> int:
-        """Calculate Haversine formula components.
-        Args:
-            lat1, lon1: First point coordinates in radians
-            lat2, lon2: Second point coordinates in radians
-        Returns:
-            float: Haversine formula result
+    def _calculate_haversine(
+        location_a: GPSCoordinates, location_b: GPSCoordinates
+    ) -> int:
+        """Haversine formula calculates the great-circle distance between two points
+        on a sphere (Earth). Formula: d = 2R * arcsin(sqrt(h)), where:
+        - h = sin²(Δφ/2) + cos(φ₁)cos(φ₂)sin²(Δλ/2)
+        - R is Earth's radius (~6371km)
+        - φ is latitude
+        - λ is longitude
         """
+        # Convert to radians
+        lat1, lon1 = location_a.to_radians()
+        lat2, lon2 = location_b.to_radians()
+
         dlat = lat2 - lat1
         dlon = lon2 - lon1
         a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
@@ -24,24 +28,10 @@ class DistanceCalculator:
 
     @staticmethod
     def calculate_straight_line(
-        venue_coords: Tuple[float, float], user_coords: Tuple[float, float]
+        venue_location: GPSCoordinates, user_location: GPSCoordinates
     ) -> int:
-        """Calculate straight line distance between two coordinates.
-        Args:
-            venue_coords: Tuple of (longitude, latitude)
-            user_coords: Tuple of (longitude, latitude)
-        Returns:
-            int: Distance in meters
-        """
-        # Extract and convert coordinates
-        venue_lon, venue_lat = venue_coords
-        user_lon, user_lat = user_coords
-
-        # Convert to radians and calculate
-        lat1, lon1 = radians(venue_lat), radians(venue_lon)
-        lat2, lon2 = radians(user_lat), radians(user_lon)
-
-        distance = DistanceCalculator._calculate_haversine(lat1, lon1, lat2, lon2)
-
-        logger.debug("Calculated distance: %dm", distance)
+        """Calculate straight line distance between two locations."""
+        distance = DistanceCalculator._calculate_haversine(
+            venue_location, user_location
+        )
         return distance

@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from app.models.models import (
     DeliveryPriceResponse,
     DeliveryQueryParams,
+    GPSCoordinates,
     VenueDynamic,
     VenueStatic,
 )
@@ -17,8 +18,9 @@ class DeliveryFeeCalculator:
         self.filter_query = filter_query
         self.venue_service = VenueService()
 
-    async def read_params(self) -> DeliveryQueryParams:
-        return self.filter_query
+    async def read_params(self) -> tuple[DeliveryQueryParams, GPSCoordinates]:
+        user_location = self.filter_query.to_gps_coordinates()
+        return self.filter_query, user_location
 
     async def fetch_venue_data(self, venue_slug: str):
         try:
@@ -35,21 +37,22 @@ class DeliveryFeeCalculator:
 
     async def validate_delivery_distance(
         self,
-        params: DeliveryQueryParams,
+        user_location: GPSCoordinates,
         static_data: VenueStatic,
         dynamic_data: VenueDynamic,
     ) -> int:
         # Get coordinates
-        venue_coords = static_data.location.coordinates
-        user_coords = (params.user_lon, params.user_lat)
+        venue_location = static_data.location
 
-        if venue_coords == user_coords:
+        if venue_location == user_location:
             raise HTTPException(
                 status_code=400, detail="User and venue location are the same"
             )
 
         # Calculate distance
-        distance = DistanceCalculator.calculate_straight_line(venue_coords, user_coords)
+        distance = DistanceCalculator.calculate_straight_line(
+            venue_location, user_location
+        )
         logger.info(f"Calculated delivery distance: {distance}m")
         if distance == 0:
             raise HTTPException(
@@ -70,12 +73,14 @@ class DeliveryFeeCalculator:
 
     async def calculate_price(self) -> DeliveryPriceResponse:
         try:
-            params = await self.read_params()
+            params, user_location = await self.read_params()
             static_data, dynamic_data = await self.fetch_venue_data(params.venue_slug)
             distance = await self.validate_delivery_distance(
-                params, static_data, dynamic_data
+                user_location, static_data, dynamic_data
             )
-            result = await total_fee_calculator(params, dynamic_data, distance)
+            result = await total_fee_calculator(
+                params.cart_value, dynamic_data, distance
+            )
             return result
         except HTTPException as e:
             logger.error("Error calculating price: %s", e.detail)

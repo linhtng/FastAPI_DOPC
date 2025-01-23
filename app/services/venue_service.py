@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from app.utils.logging import logger
 from app.utils.constants import VENUE_ENDPOINT
 from app.utils.http_client import HTTPClient
-from app.models.models import DeliverySpecs, VenueCoordinates, VenueDynamic, VenueStatic
+from app.models.models import DeliverySpecs, GPSCoordinates, VenueDynamic, VenueStatic
 
 
 class VenueService:
@@ -14,7 +14,7 @@ class VenueService:
         except Exception as e:
             logger.error(f"Failed to initialize HTTP client: {str(e)}")
             raise HTTPException(
-                status_code=502, detail=f"Invalid response from venue service: {str(e)}"
+                status_code=503, detail=f"Venue service is not available: {str(e)}"
             )
 
     async def get_venue_static(self, venue_slug: str) -> VenueStatic:
@@ -22,10 +22,11 @@ class VenueService:
             data = await self.client.get(f"{venue_slug}/static")
             venue_raw = data["venue_raw"]
             location_data = venue_raw["location"]
-            coordinates = location_data["coordinates"]
-            return VenueStatic(
-                location=VenueCoordinates(coordinates=tuple(coordinates))
-            )
+            coordinates = location_data["coordinates"]  # Returns tuple (lon, lat)
+
+            # Convert tuple to GPSCoordinates
+            location = GPSCoordinates.from_coordinates(tuple(coordinates))
+            return VenueStatic(location=location)
         except HTTPException as e:
             # Re-raise HTTP exceptions with same status
             raise e

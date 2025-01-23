@@ -6,7 +6,6 @@ from app.utils.constants import DISTANCE_FEE_DIVISOR
 from app.models.models import (
     DeliveryFeeInfo,
     DeliveryPriceResponse,
-    DeliveryQueryParams,
     DistanceRange,
     VenueDynamic,
 )
@@ -72,7 +71,7 @@ def calculate_small_order_surcharge(cart_value: int, minimum_no_surcharge: int) 
 
 
 async def total_fee_calculator(
-    params: DeliveryQueryParams,
+    cart_value: int,
     dynamic_data: VenueDynamic,
     distance: int,
 ) -> DeliveryPriceResponse:
@@ -95,16 +94,16 @@ async def total_fee_calculator(
 
     # Calculate small order surcharge
     small_order_surcharge = calculate_small_order_surcharge(
-        cart_value=params.cart_value,
+        cart_value=cart_value,
         minimum_no_surcharge=delivery_specs.order_minimum_no_surcharge,
     )
 
     # Calculate total price
-    total_price = params.cart_value + delivery_fee + small_order_surcharge
+    total_price = cart_value + delivery_fee + small_order_surcharge
 
     logger.info(
         f"Total price calculation: "
-        f"cart_value={params.cart_value} + "
+        f"cart_value={cart_value} + "
         f"delivery_fee={delivery_fee} + "
         f"surcharge={small_order_surcharge} = "
         f"total={total_price}"
@@ -113,6 +112,6 @@ async def total_fee_calculator(
     return DeliveryPriceResponse(
         total_price=total_price,
         small_order_surcharge=small_order_surcharge,
-        cart_value=params.cart_value,
+        cart_value=cart_value,
         delivery=DeliveryFeeInfo(fee=delivery_fee, distance=distance),
     )

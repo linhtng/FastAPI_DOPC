@@ -1,8 +1,7 @@
-# from decimal import Decimal
+from math import radians
 from typing import List, Optional, Tuple
-
 from pydantic import BaseModel, ConfigDict, Field
-from app.utils import constants
+from app.utils.constants import MIN_LAT, MIN_LON, MAX_LAT, MAX_LON
 
 
 class DeliveryQueryParams(BaseModel):
@@ -12,8 +11,11 @@ class DeliveryQueryParams(BaseModel):
         min_length=1,
     )
     cart_value: int = Field(ge=0)
-    user_lat: float = Field(ge=constants.MIN_LAT, le=constants.MAX_LAT)
-    user_lon: float = Field(ge=constants.MIN_LON, le=constants.MAX_LON)
+    user_lat: float = Field(ge=MIN_LAT, le=MAX_LAT)
+    user_lon: float = Field(ge=MIN_LON, le=MAX_LON)
+
+    def to_gps_coordinates(self) -> "GPSCoordinates":
+        return GPSCoordinates(longitude=self.user_lon, latitude=self.user_lat)
 
 
 class DeliveryFeeInfo(BaseModel):
@@ -40,10 +42,23 @@ class DeliveryPriceResponse(BaseModel):
     )
 
 
-class VenueCoordinates(BaseModel):
-    coordinates: Tuple[float, float] = Field(
-        ..., description="Venue coordinates [longitude, latitude]"
-    )
+class GPSCoordinates(BaseModel):
+    longitude: float = Field()
+    latitude: float = Field()
+
+    @property
+    def coordinates(self) -> Tuple[float, float]:
+        return (self.longitude, self.latitude)
+
+    @classmethod
+    def from_coordinates(cls, coords: Tuple[float, float]) -> "GPSCoordinates":
+        """Create from legacy (longitude, latitude) tuple"""
+        lon, lat = coords
+        return cls(longitude=lon, latitude=lat)
+
+    def to_radians(self) -> tuple[float, float]:
+        """Convert coordinates to radians"""
+        return (radians(self.latitude), radians(self.longitude))
 
 
 class DistanceRange(BaseModel):
@@ -65,7 +80,7 @@ class DeliverySpecs(BaseModel):
 
 
 class VenueStatic(BaseModel):
-    location: VenueCoordinates
+    location: GPSCoordinates
     model_config = ConfigDict(extra="allow")
 
 
