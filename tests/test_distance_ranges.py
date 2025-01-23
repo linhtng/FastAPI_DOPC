@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.models import DeliverySpecs
+from app.models.models import DeliverySpecs
 
 
 @pytest.mark.parametrize(

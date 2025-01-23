@@ -8,8 +8,9 @@ class DistanceCalculator:
     def _calculate_haversine(
         location_a: GPSCoordinates, location_b: GPSCoordinates
     ) -> int:
-        """Haversine formula calculates the great-circle distance between two points
-        on a sphere (Earth). Formula: d = 2R * arcsin(sqrt(h)), where:
+        """Haversine formula calculates the great-circle distance between
+        two points on a sphere (Earth). Formula: d = 2R * arcsin(sqrt(h)),
+        where:
         - h = sin²(Δφ/2) + cos(φ₁)cos(φ₂)sin²(Δλ/2)
         - R is Earth's radius (~6371km)
         - φ is latitude

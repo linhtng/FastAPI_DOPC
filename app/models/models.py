@@ -78,6 +78,10 @@ class DeliverySpecs(BaseModel):
     base_price: int = Field(..., description="Base price")
     distance_ranges: List[DistanceRange]
 
+    @property
+    def max_allowed_distance(self) -> int:
+        return self.distance_ranges[-1].min
+
 
 class VenueStatic(BaseModel):
     location: GPSCoordinates

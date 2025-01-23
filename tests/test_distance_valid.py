@@ -3,8 +3,8 @@ from unittest.mock import patch
 import pytest
 from fastapi import HTTPException
 
-from app.main import validate_delivery_distance
-from app.models import DeliveryQueryParams, VenueDynamic, VenueStatic
+from app.services.delivery_fee_calculator import DeliveryFeeCalculator
+from app.models.models import DeliveryQueryParams, VenueDynamic, VenueStatic
 
 
 @pytest.fixture
@@ -70,14 +70,14 @@ async def test_validate_delivery_distance(
 
         if expected_status:
             with pytest.raises(HTTPException) as exc:
-                await validate_delivery_distance(
+                await DeliveryFeeCalculator.valid_delivery_distance(
                     test_params, test_static_data, test_dynamic_data
                 )
             assert exc.value.status_code == expected_status
             if check_msg:
                 assert "delivery distance" in exc.value.detail.lower()
         else:
-            result = await validate_delivery_distance(
+            result = await DeliveryFeeCalculator.valid_delivery_distance(
                 test_params, test_static_data, test_dynamic_data
             )
             assert isinstance(result, int)

@@ -1,10 +1,10 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 from fastapi import HTTPException
 
-from app.http_client import HTTPClient
-from app.venue_service import VenueService
+from app.utils.http_client import HTTPClient
+from app.services.venue_service import VenueService
 
 
 @pytest.mark.asyncio
@@ -38,7 +38,3 @@ async def test_venue_service_http_errors():
         with pytest.raises(HTTPException) as exc_info:
             await service.get_venue_dynamic("test-venue")
         assert exc_info.value.status_code == status_code
-
-
-# Run with:
-# python -m pytest tests/test_venue_service.py -v

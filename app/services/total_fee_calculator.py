@@ -7,7 +7,7 @@ from app.models.models import (
     DeliveryFeeInfo,
     DeliveryPriceResponse,
     DistanceRange,
-    VenueDynamic,
+    DeliverySpecs,
 )
 
 
@@ -30,15 +30,11 @@ def find_applicable_range(
 def calculate_distance_fee(
     distance: int, base_price: int, distance_ranges: List[DistanceRange]
 ) -> int:
-    """Calculate total delivery fee based on distance.
-    Args:
-        distance: Distance in meters
-        base_price: Base delivery fee in cents
-        distance_ranges: Available distance ranges
-    Returns:
-        Total delivery fee in cents
-    Raises:
-        ValueError: If no applicable range found
+    """Calculate delivery fee by adding base price and distance-based
+    components. Distance fee is calculated using ranges:
+    - Fixed amount (a) per range
+    - Variable amount (b) multiplied by distance
+    Total = base_price + a + (b * distance)
     """
     applicable_range = find_applicable_range(distance, distance_ranges)
     if not applicable_range:
@@ -48,11 +44,12 @@ def calculate_distance_fee(
     total_distance_fee = base_price + constant_fee + distance_based_fee
 
     logger.info(
-        "Fee calculation: base=%d, constant=%d, distance=%d, total_distance_fee=%d",
-        base_price,
-        constant_fee,
-        distance_based_fee,
-        total_distance_fee,
+        f"Distance fee calculation: "
+        f"distance={distance}, "
+        f"base_price={base_price}, "
+        f"constant_fee={constant_fee}, "
+        f"distance_based_fee={distance_based_fee}, "
+        f"total_distance_fee={total_distance_fee}"
     )
 
     return total_distance_fee
@@ -72,11 +69,9 @@ def calculate_small_order_surcharge(cart_value: int, minimum_no_surcharge: int) 
 
 async def total_fee_calculator(
     cart_value: int,
-    dynamic_data: VenueDynamic,
+    delivery_specs: DeliverySpecs,
     distance: int,
 ) -> DeliveryPriceResponse:
-
-    delivery_specs = dynamic_data.delivery_specs
 
     # Calculate delivery fee
     try:
@@ -85,7 +80,6 @@ async def total_fee_calculator(
             base_price=delivery_specs.base_price,
             distance_ranges=delivery_specs.distance_ranges,
         )
-        logger.info("Calculated delivery fee: %d", delivery_fee)
     except ValueError as e:
         logger.error("Error calculating delivery fee: %s", str(e))
         raise HTTPException(

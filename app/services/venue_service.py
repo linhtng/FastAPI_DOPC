@@ -6,6 +6,15 @@ from app.models.models import DeliverySpecs, GPSCoordinates, VenueDynamic, Venue
 
 
 class VenueService:
+    """Service for fetching venue data from external API.
+
+    Per API contract:
+    - If response status is 200, all required fields are guaranteed in payload
+    - Only HTTP errors need handling, re-raised with original status codes
+    - Static endpoint returns venue location
+    - Dynamic endpoint returns delivery specifications
+    """
+
     BASE_URL = VENUE_ENDPOINT
 
     def __init__(self):
@@ -28,7 +37,6 @@ class VenueService:
             location = GPSCoordinates.from_coordinates(tuple(coordinates))
             return VenueStatic(location=location)
         except HTTPException as e:
-            # Re-raise HTTP exceptions with same status
             raise e
 
     async def get_venue_dynamic(self, venue_slug: str) -> VenueDynamic:
@@ -50,5 +58,4 @@ class VenueService:
             return VenueDynamic(delivery_specs=delivery_specs)
 
         except HTTPException as e:
-            # Re-raise HTTP exceptions with same status
             raise e

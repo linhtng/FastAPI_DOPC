@@ -4,8 +4,6 @@ from app.models.models import (
     DeliveryPriceResponse,
     DeliveryQueryParams,
     GPSCoordinates,
-    VenueDynamic,
-    VenueStatic,
 )
 from .distance_calculator import DistanceCalculator
 from .total_fee_calculator import total_fee_calculator
@@ -35,35 +33,23 @@ class DeliveryFeeCalculator:
             logger.error("HTTP error fetching venue data: %s", e.detail)
             raise
 
-    async def validate_delivery_distance(
+    async def valid_delivery_distance(
         self,
         user_location: GPSCoordinates,
-        static_data: VenueStatic,
-        dynamic_data: VenueDynamic,
+        venue_location: GPSCoordinates,
+        max_allowed_distance: int,
     ) -> int:
-        # Get coordinates
-        venue_location = static_data.location
 
-        if venue_location == user_location:
-            raise HTTPException(
-                status_code=400, detail="User and venue location are the same"
-            )
+        if user_location == venue_location:
+            logger.info("User at venue location, distance: 0m")
+            return 0
 
-        # Calculate distance
         distance = DistanceCalculator.calculate_straight_line(
             venue_location, user_location
         )
         logger.info(f"Calculated delivery distance: {distance}m")
-        if distance == 0:
-            raise HTTPException(
-                status_code=400,
-                detail="Zero delivery distance. User and venue location are the same",
-            )
 
-        # Get maximum allowed distance
-        max_range = dynamic_data.delivery_specs.distance_ranges[-1].min
-
-        if distance >= max_range:
+        if distance >= max_allowed_distance:
             raise HTTPException(
                 status_code=400,
                 detail=f"Delivery distance {distance}m is too long. Delivery not available",
@@ -75,11 +61,13 @@ class DeliveryFeeCalculator:
         try:
             params, user_location = await self.read_params()
             static_data, dynamic_data = await self.fetch_venue_data(params.venue_slug)
-            distance = await self.validate_delivery_distance(
-                user_location, static_data, dynamic_data
+            distance = await self.valid_delivery_distance(
+                user_location,
+                static_data.location,
+                dynamic_data.delivery_specs.max_allowed_distance,
             )
             result = await total_fee_calculator(
-                params.cart_value, dynamic_data, distance
+                params.cart_value, dynamic_data.delivery_specs, distance
             )
             return result
         except HTTPException as e:
