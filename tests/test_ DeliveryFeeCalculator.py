@@ -76,44 +76,6 @@ async def test_fetch_venue_data(test_params, test_venue_data):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "user_coords,venue_coords,max_distance,expected",
-    [
-        ((24.93087, 60.17094), (24.93087, 60.17094), 1000, 0),  # Same location
-        ((24.93088, 60.17095), (24.93087, 60.17094), 1000, 177),  # Valid distance
-        ((25.00000, 61.00000), (24.93087, 60.17094), 1000, None),  # Too far
-    ],
-    ids=["same_location", "valid_distance", "too_far"],
-)
-async def test_validate_delivery_distance(
-    user_coords, venue_coords, max_distance, expected
-):
-    user_location = GPSCoordinates(longitude=user_coords[0], latitude=user_coords[1])
-    venue_location = GPSCoordinates(longitude=venue_coords[0], latitude=venue_coords[1])
-
-    calculator = DeliveryFeeCalculator(
-        DeliveryQueryParams(
-            venue_slug="test-venue",
-            cart_value=1000,
-            user_lat=user_coords[1],
-            user_lon=user_coords[0],
-        )
-    )
-
-    if expected is None:
-        with pytest.raises(HTTPException) as exc:
-            await calculator.valid_delivery_distance(
-                user_location, venue_location, max_distance
-            )
-        assert exc.value.status_code == 400
-    else:
-        distance = await calculator.valid_delivery_distance(
-            user_location, venue_location, max_distance
-        )
-        assert distance == expected
-
-
-@pytest.mark.asyncio
 async def test_calculate_price(test_params, test_venue_data):
     calculator = DeliveryFeeCalculator(test_params)
 

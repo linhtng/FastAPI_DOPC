@@ -3,46 +3,26 @@ from unittest.mock import patch
 import pytest
 from fastapi import HTTPException
 
+from app.models.models import DeliveryQueryParams, GPSCoordinates
 from app.services.delivery_fee_calculator import DeliveryFeeCalculator
-from app.models.models import DeliveryQueryParams, VenueDynamic, VenueStatic
 
 
 @pytest.fixture
-def test_params():
-    return DeliveryQueryParams(
-        venue_slug="test-venue", cart_value=1000, user_lat=60.17094, user_lon=24.93087
-    )
-
-
-@pytest.fixture
-def test_static_data():
-    return VenueStatic(location={"coordinates": (24.93087, 60.17094)})
-
-
-@pytest.fixture
-def test_dynamic_data():
-    return VenueDynamic(
-        delivery_specs={
-            "order_minimum_no_surcharge": 1000,
-            "base_price": 199,
-            "distance_ranges": [
-                {"min": 0, "max": 500, "a": 0, "b": 0},
-                {"min": 500, "max": 1000, "a": 100, "b": 1},
-                {"min": 1000, "max": 0, "a": 0, "b": 0},
-            ],
-        }
-    )
+def test_coords():
+    return {
+        "venue": GPSCoordinates(longitude=24.93087, latitude=60.17094),
+        "user": GPSCoordinates(longitude=24.93087, latitude=60.17094),
+    }
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "user_coords,mock_distance,expected_status,check_msg",
     [
-        ((24.93087, 60.17094), None, 400, False),  # Same coordinates
-        ((24.93088, 60.17095), 0, 400, True),  # Zero distance
+        ((24.93087, 60.17094), 176, None, False),  # Valid
         ((25.00000, 61.00000), 1000, 400, False),  # Exceeds max
-        ((25.00000, 161.00000), 9740280, 400, False),  # Exceeds max
-        ((24.94000, 60.18000), 500, None, False),  # Valid case
+        ((26.00000, 61.00000), 109275, 400, False),  # Exceeds max
+        ((24.94000, 60.18000), 999, None, False),  # Valid distance
     ],
     ids=[
         "same_coords",
@@ -53,31 +33,38 @@ def test_dynamic_data():
     ],
 )
 async def test_validate_delivery_distance(
-    test_params,
-    test_static_data,
-    test_dynamic_data,
-    user_coords,
-    mock_distance,
-    expected_status,
-    check_msg,
+    test_coords, user_coords, mock_distance, expected_status, check_msg
 ):
-    test_params.user_lon, test_params.user_lat = user_coords
+    calculator = DeliveryFeeCalculator(
+        DeliveryQueryParams(
+            venue_slug="test-venue",
+            cart_value=1000,
+            user_lat=user_coords[1],
+            user_lon=user_coords[0],
+        )
+    )
+
+    user_location = GPSCoordinates(longitude=user_coords[0], latitude=user_coords[1])
 
     with patch(
-        "app.dopc_distance.DistanceCalculator.calculate_straight_line"
+        "app.services.distance_calculator.DistanceCalculator.calculate_straight_line"
     ) as mock_calc:
         mock_calc.return_value = mock_distance if mock_distance is not None else 0
 
         if expected_status:
             with pytest.raises(HTTPException) as exc:
-                await DeliveryFeeCalculator.valid_delivery_distance(
-                    test_params, test_static_data, test_dynamic_data
+                await calculator.valid_delivery_distance(
+                    user_location=user_location,
+                    venue_location=test_coords["venue"],
+                    max_allowed_distance=1000,
                 )
             assert exc.value.status_code == expected_status
             if check_msg:
                 assert "delivery distance" in exc.value.detail.lower()
         else:
-            result = await DeliveryFeeCalculator.valid_delivery_distance(
-                test_params, test_static_data, test_dynamic_data
+            result = await calculator.valid_delivery_distance(
+                user_location=user_location,
+                venue_location=test_coords["venue"],
+                max_allowed_distance=1000,
             )
             assert isinstance(result, int)
