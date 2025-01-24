@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import AsyncMock
-from fastapi import HTTPException
 
 from app.services.delivery_fee_calculator import DeliveryFeeCalculator
 from app.models.models import (
@@ -10,21 +9,6 @@ from app.models.models import (
     VenueDynamic,
     DeliverySpecs,
 )
-
-
-@pytest.fixture
-def test_params():
-    return DeliveryQueryParams(
-        venue_slug="test-venue", cart_value=1000, user_lat=60.17094, user_lon=24.93087
-    )
-
-
-@pytest.fixture
-def test_coords():
-    return {
-        "user": GPSCoordinates(latitude=60.17094, longitude=24.93087),
-        "venue": GPSCoordinates(latitude=60.17094, longitude=24.93087),
-    }
 
 
 @pytest.fixture

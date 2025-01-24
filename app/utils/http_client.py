@@ -1,7 +1,7 @@
 from typing import Any, Dict
-
 import httpx
 from fastapi import HTTPException
+from app.utils.logging import logger
 
 
 # TODO: Add unit tests for this class, return json response as expected: test case json response
@@ -14,6 +14,7 @@ class HTTPClient:
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.get(f"{self.base_url}{endpoint}")
+                logger.info(f"GET {self.base_url}{endpoint} - {response.status_code}")
                 # Check specific status code
                 if response.status_code != 200:
                     raise HTTPException(
@@ -21,6 +22,9 @@ class HTTPClient:
                         detail=f"External API returned {response.status_code}: {response.text}",
                     )
                 return response.json()
+        except HTTPException:
+            # Re-raise HTTPExceptions to avoid being caught by the generic block
+            raise
         except httpx.TimeoutException:
             raise HTTPException(status_code=504, detail="Request timeout")
         except httpx.HTTPStatusError as e:

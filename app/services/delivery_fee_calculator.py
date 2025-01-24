@@ -30,7 +30,7 @@ class DeliveryFeeCalculator:
             return static_data, dynamic_data
 
         except HTTPException as e:
-            logger.error("HTTP error fetching venue data: %s", e.detail)
+            logger.error(f"HTTP error fetching venue data: {str(e)}")
             raise
 
     async def valid_delivery_distance(
@@ -71,5 +71,5 @@ class DeliveryFeeCalculator:
             )
             return result
         except HTTPException as e:
-            logger.error("Error calculating price: %s", e.detail)
+            logger.error(f"Error calculating delivery price: {str(e)}")
             raise

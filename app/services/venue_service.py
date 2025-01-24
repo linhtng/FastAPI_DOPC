@@ -37,6 +37,7 @@ class VenueService:
             location = GPSCoordinates.from_coordinates(tuple(coordinates))
             return VenueStatic(location=location)
         except HTTPException as e:
+            logger.error(f"HTTP error fetching venue data: {str(e)}")
             raise e
 
     async def get_venue_dynamic(self, venue_slug: str) -> VenueDynamic:
@@ -58,4 +59,5 @@ class VenueService:
             return VenueDynamic(delivery_specs=delivery_specs)
 
         except HTTPException as e:
+            logger.error(f"HTTP error fetching venue data: {str(e)}")
             raise e

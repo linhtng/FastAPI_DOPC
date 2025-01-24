@@ -1,12 +1,5 @@
 import pytest
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-
-@pytest.fixture
-def test_client():
-    return TestClient(app)
+from app.models.models import DeliveryQueryParams, GPSCoordinates
 
 
 @pytest.fixture
@@ -16,4 +9,19 @@ def valid_query_params():
         "cart_value": 1000,
         "user_lat": 60.17094,
         "user_lon": 24.93087,
+    }
+
+
+@pytest.fixture
+def test_params(valid_query_params):
+    return DeliveryQueryParams(**valid_query_params)
+
+
+@pytest.fixture
+def test_coords(test_params):
+    return {
+        "venue": GPSCoordinates(longitude=24.93087, latitude=60.17094),
+        "user": GPSCoordinates(
+            longitude=test_params.user_lon, latitude=test_params.user_lat
+        ),
     }

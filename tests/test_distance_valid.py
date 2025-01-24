@@ -7,14 +7,6 @@ from app.models.models import DeliveryQueryParams, GPSCoordinates
 from app.services.delivery_fee_calculator import DeliveryFeeCalculator
 
 
-@pytest.fixture
-def test_coords():
-    return {
-        "venue": GPSCoordinates(longitude=24.93087, latitude=60.17094),
-        "user": GPSCoordinates(longitude=24.93087, latitude=60.17094),
-    }
-
-
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "user_coords,mock_distance,expected_status,check_msg",
@@ -25,8 +17,7 @@ def test_coords():
         ((24.94000, 60.18000), 999, None, False),  # Valid distance
     ],
     ids=[
-        "same_coords",
-        "zero_distance",
+        "valid_distance",
         "exceeds_max",
         "exceeds_max",
         "valid_distance",
