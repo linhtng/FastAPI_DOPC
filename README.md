@@ -10,7 +10,12 @@ Example:
 ```
 curl http://localhost:8000/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=60.17094&user_lon=24.93087
 ```
-
+Query Parameters (**all are required**):
+* `venue_slug` (string): The unique identifier (slug) for the venue from which the delivery order will be placed
+* `cart_value`: (integer): The total value of the items in the shopping cart
+* `user_lat` (number with decimal point): The latitude of the user's location
+* `user_lon` (number with decimal point): The longitude of the user's location
+  
 #### Response
 Example:
 ```json
@@ -36,17 +41,7 @@ make
 ```
 
 The API documentation is available in http://127.0.0.1:8000/docs. Here you can test all endpoints directly from your browser and try out requests with different parameters.
-Alternative, you can launch Postman, set base URL: `http://127.0.0.1:8000` and add the following Configure Request:
-- Method: GET
-- Endpoint: `/api/v1/delivery-order-price`
-- Headers: 
-  - `Content-Type: application/json`
-
-Query Parameters (**all are required**):
-* `venue_slug` (string): The unique identifier (slug) for the venue from which the delivery order will be placed
-* `cart_value`: (integer): The total value of the items in the shopping cart
-* `user_lat` (number with decimal point): The latitude of the user's location
-* `user_lon` (number with decimal point): The longitude of the user's location
+Alternatively, you can launch Postman and send request like the example above.
 
 #### Tests
 ```
