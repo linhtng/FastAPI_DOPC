@@ -4,7 +4,6 @@ from fastapi import HTTPException
 from app.utils.logging import logger
 
 
-# TODO: Add unit tests for this class, return json response as expected: test case json response
 class HTTPClient:
     def __init__(self, base_url: str, timeout: int = 10):
         self.base_url = base_url
@@ -31,12 +30,3 @@ class HTTPClient:
             raise HTTPException(status_code=e.response.status_code, detail=str(e))
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"External API error: {str(e)}")
-
-
-# TODO: Need unit tests for these exception
-# except httpx.TimeoutException:
-#     raise HTTPException(status_code=504, detail="Request timeout")
-# except httpx.HTTPStatusError as e:
-#     raise HTTPException(status_code=e.response.status_code, detail=str(e))
-# except Exception as e:
-#     raise HTTPException(status_code=500, detail=f"External API error: {str(e)}")

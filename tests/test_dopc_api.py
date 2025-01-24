@@ -29,6 +29,22 @@ client = TestClient(app)
                 "delivery": {"fee": 190, "distance": 177},
             },
         ),
+        # Venue not found
+        (
+            {
+                "venue_slug": "home-assignment-venue-helsingi",
+                "cart_value": 1000,
+                "user_lat": 60.17094,
+                "user_lon": 24.93087,
+            },
+            404,
+            {
+                "total_price": 1190,
+                "small_order_surcharge": 0,
+                "cart_value": 1000,
+                "delivery": {"fee": 190, "distance": 177},
+            },
+        ),
         # Invalid coordinates
         (
             {
@@ -57,9 +73,7 @@ async def test_delivery_price_endpoint(
             )
         else:
             instance.calculate_price = AsyncMock(
-                side_effect=HTTPException(
-                    status_code=expected_status, detail=expected_response["detail"]
-                )
+                side_effect=HTTPException(status_code=expected_status)
             )
 
         response = client.get("/api/v1/delivery-order-price", params=query_params)

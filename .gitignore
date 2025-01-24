@@ -3,6 +3,7 @@ tests/__pycache__/
 __pycache__/
 .mypy_cache
 logs/
+load_test_results/
 
 *.py[cod]
 *$py.class
@@ -12,6 +13,7 @@ pytest_cache/
 htmlcov/
 .DS_Store
 .vscode/
+
 
 # Environments
 .env

@@ -7,3 +7,12 @@ services:
     volumes:
       - ./app:/code/app
       - ./tests:/code/tests
+  locust:
+    image: locustio/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./locustfile.py:/mnt/locust/locustfile.py
+    command: -f /mnt/locust/locustfile.py --host http://dopc:8000
+    depends_on:
+      - dopc
