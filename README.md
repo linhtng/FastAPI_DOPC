@@ -53,6 +53,14 @@ Query Parameters (**all are required**):
 make pytest
 ```
 
+#### Performance Test
+
+Visit: 
+```
+http://localhost:8089/
+```
+Change number of users/ramp up if you wish, then start testing.
+
 ### Without Docker
 **Prerequisites**
 * Python 3.10 or later: [https://www.python.org/downloads/](https://www.python.org/downloads/)
@@ -86,4 +94,9 @@ The API documentation is available in http://127.0.0.1:8000/docs.
 #### Tests
 ```
 pytest -v --capture=no --verbose
+```
+
+#### Performance Test 
+```
+sh run_load_test.sh
 ```

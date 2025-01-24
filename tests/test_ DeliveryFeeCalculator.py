@@ -3,7 +3,6 @@ from unittest.mock import AsyncMock
 
 from app.services.delivery_fee_calculator import DeliveryFeeCalculator
 from app.models.models import (
-    DeliveryQueryParams,
     GPSCoordinates,
     VenueStatic,
     VenueDynamic,
