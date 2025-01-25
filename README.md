@@ -91,7 +91,8 @@ The API documentation is available in http://127.0.0.1:8000/docs.
 pytest -v --capture=no --verbose
 ```
 
-#### Performance Test 
+#### Performance Test
+In another terminal window, repeate the "Setting things up" steps then run locust script:
 ```
 sh run_load_test.sh
 ```

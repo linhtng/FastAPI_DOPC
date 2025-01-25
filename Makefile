@@ -1,6 +1,5 @@
 .PHONY: run test clean re
 
-# Create directories for mounting volumes
 
 all: run
 

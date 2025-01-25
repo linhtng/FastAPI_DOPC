@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Check if locust is installed
+check_locust() {
+    if ! command -v locust &> /dev/null; then
+        echo "Error: Locust is not installed"
+        echo "Install it using: pip install locust"
+        exit 1
+    fi
+}
+
+# Run check before starting test
+check_locust
+
 # This script runs a performance test using Locust in a headless mode to simulate:
 
 # 3 users accessing the DOPC application concurrently.
