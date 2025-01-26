@@ -8,7 +8,7 @@ run:
 	docker compose up
 
 # Test
-test:
+pytest:
 	docker compose run dopc pytest -v --capture=no --verbose
 
 # Stop the services
