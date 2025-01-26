@@ -9,3 +9,4 @@ bandit==1.8.2
 pytest-asyncio==0.25.2
 locust==2.32.6
 isort==5.13.2
+pylint==3.3.3
