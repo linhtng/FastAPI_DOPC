@@ -4,7 +4,7 @@ from app.services.total_fee_calculator import (
     calculate_distance_fee,
     calculate_small_order_surcharge,
 )
-from app.models.models import DeliveryPriceResponse, DeliveryFeeInfo
+from app.models import DeliveryPriceResponse, DeliveryFeeInfo
 from app.services.total_fee_calculator import total_fee_calculator
 
 

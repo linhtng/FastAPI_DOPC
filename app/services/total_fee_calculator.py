@@ -1,9 +1,8 @@
 from typing import List, Optional
 from fastapi import HTTPException
-
 from app.utils.logging import logger
 from app.utils.constants import DISTANCE_FEE_DIVISOR
-from app.models.models import (
+from app.models import (
     DeliveryFeeInfo,
     DeliveryPriceResponse,
     DistanceRange,

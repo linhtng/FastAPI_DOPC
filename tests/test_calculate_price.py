@@ -2,7 +2,7 @@ from fastapi import HTTPException
 import pytest
 from unittest.mock import AsyncMock
 from app.services.delivery_fee_calculator import DeliveryFeeCalculator
-from app.models.models import (
+from app.models import (
     DeliveryPriceResponse,
     DeliveryFeeInfo,
 )

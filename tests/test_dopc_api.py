@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from fastapi import HTTPException
 
 from app.main import app
-from app.models.models import DeliveryPriceResponse
+from app.models import DeliveryPriceResponse
 from app.utils.constants import (
     EXPECTED_CART_VALUE,
     EXPECTED_USER_LATITUDE,

@@ -1,6 +1,6 @@
 import pytest
 from math import pi
-from app.models.models import GPSCoordinates
+from app.models import GPSCoordinates
 from app.utils.constants import (
     MIN_LAT, MAX_LAT, MIN_LON, MAX_LON, 
     EXPECTED_USER_LATITUDE, 

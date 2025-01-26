@@ -1,8 +1,6 @@
 from typing import Annotated
-
 from fastapi import FastAPI, HTTPException, Query
-
-from .models.models import DeliveryQueryParams
+from .models import DeliveryQueryParams
 from .services.delivery_fee_calculator import DeliveryFeeCalculator
 from .utils.logging import logger
 

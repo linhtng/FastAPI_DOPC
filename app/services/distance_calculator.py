@@ -1,5 +1,5 @@
 from math import asin, cos, sin, sqrt
-from app.models.models import GPSCoordinates
+from app.models import GPSCoordinates
 from app.utils.constants import EARTH_RADIUS
 
 

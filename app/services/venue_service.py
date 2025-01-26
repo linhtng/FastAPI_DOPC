@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from app.utils.logging import logger
 from app.utils.constants import VENUE_ENDPOINT
 from app.utils.http_client import HTTPClient
-from app.models.models import DeliverySpecs, GPSCoordinates, VenueDynamic, VenueStatic
+from app.models import DeliverySpecs, GPSCoordinates, VenueDynamic, VenueStatic
 
 
 class VenueService:

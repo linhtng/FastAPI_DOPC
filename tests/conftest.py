@@ -1,5 +1,5 @@
 import pytest
-from app.models.models import (
+from app.models import (
     DeliveryQueryParams, GPSCoordinates, DeliverySpecs, DistanceRange,
     VenueStatic, VenueDynamic
 )
