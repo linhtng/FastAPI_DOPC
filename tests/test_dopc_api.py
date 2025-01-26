@@ -5,6 +5,12 @@ from fastapi import HTTPException
 
 from app.main import app
 from app.models.models import DeliveryPriceResponse
+from app.utils.constants import (
+    EXPECTED_CART_VALUE,
+    EXPECTED_USER_LATITUDE,
+    EXPECTED_USER_LONGITUDE,
+    EXPECTED_VENUE_SLUG,
+)
 
 client = TestClient(app)
 
@@ -16,10 +22,10 @@ client = TestClient(app)
         # Valid request
         (
             {
-                "venue_slug": "home-assignment-venue-helsinki",
-                "cart_value": 1000,
-                "user_lat": 60.17094,
-                "user_lon": 24.93087,
+                "venue_slug": EXPECTED_VENUE_SLUG,
+                "cart_value": EXPECTED_CART_VALUE,
+                "user_lat": EXPECTED_USER_LATITUDE,
+                "user_lon": EXPECTED_USER_LONGITUDE,
             },
             200,
             {
@@ -32,8 +38,8 @@ client = TestClient(app)
         # Venue not found
         (
             {
-                "venue_slug": "home-assignment-venue-helsingi",
-                "cart_value": 1000,
+                "venue_slug": "home-assignment-venue-not-found",
+                "cart_value": EXPECTED_CART_VALUE,
                 "user_lat": 60.17094,
                 "user_lon": 24.93087,
             },
@@ -48,8 +54,8 @@ client = TestClient(app)
         # Invalid coordinates
         (
             {
-                "venue_slug": "test-venue",
-                "cart_value": 1000,
+                "venue_slug": EXPECTED_VENUE_SLUG,
+                "cart_value": EXPECTED_CART_VALUE,
                 "user_lat": 91,
                 "user_lon": 181,
             },

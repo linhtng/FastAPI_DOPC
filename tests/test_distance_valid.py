@@ -5,13 +5,19 @@ from fastapi import HTTPException
 
 from app.models.models import DeliveryQueryParams, GPSCoordinates
 from app.services.delivery_fee_calculator import DeliveryFeeCalculator
+from app.utils.constants import (
+    EXPECTED_CART_VALUE,
+    EXPECTED_USER_LATITUDE,
+    EXPECTED_USER_LONGITUDE,
+    EXPECTED_VENUE_SLUG,
+)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "user_coords,mock_distance,expected_status,check_msg",
     [
-        ((24.93087, 60.17094), 176, None, False),  # Valid
+        ((EXPECTED_USER_LONGITUDE, EXPECTED_USER_LATITUDE), 176, None, False),  # Valid
         ((25.00000, 61.00000), 1000, 400, False),  # Exceeds max
         ((26.00000, 61.00000), 109275, 400, False),  # Exceeds max
         ((24.94000, 60.18000), 999, None, False),  # Valid distance
@@ -28,8 +34,8 @@ async def test_validate_delivery_distance(
 ):
     calculator = DeliveryFeeCalculator(
         DeliveryQueryParams(
-            venue_slug="test-venue",
-            cart_value=1000,
+            venue_slug=EXPECTED_VENUE_SLUG,
+            cart_value=EXPECTED_CART_VALUE,
             user_lat=user_coords[1],
             user_lon=user_coords[0],
         )

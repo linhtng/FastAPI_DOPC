@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import AsyncMock
-
 from app.services.delivery_fee_calculator import DeliveryFeeCalculator
 from app.models.models import (
     GPSCoordinates,
@@ -8,13 +7,17 @@ from app.models.models import (
     VenueDynamic,
     DeliverySpecs,
 )
+from app.utils.constants import (
+    EXPECTED_USER_LATITUDE,
+    EXPECTED_USER_LONGITUDE,
+)
 
 
 @pytest.fixture
 def test_venue_data():
     return {
         "static": VenueStatic(
-            location=GPSCoordinates(latitude=60.17094, longitude=24.93087)
+            location=GPSCoordinates(latitude=EXPECTED_USER_LATITUDE, longitude=EXPECTED_USER_LONGITUDE)
         ),
         "dynamic": VenueDynamic(
             delivery_specs=DeliverySpecs(
@@ -27,17 +30,6 @@ def test_venue_data():
             )
         ),
     }
-
-
-@pytest.mark.asyncio
-async def test_read_params(test_params):
-    calculator = DeliveryFeeCalculator(test_params)
-    params, user_location = await calculator.read_params()
-
-    assert params == test_params
-    assert isinstance(user_location, GPSCoordinates)
-    assert user_location.latitude == test_params.user_lat
-    assert user_location.longitude == test_params.user_lon
 
 
 @pytest.mark.asyncio

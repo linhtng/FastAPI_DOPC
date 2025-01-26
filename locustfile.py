@@ -1,3 +1,9 @@
+from app.utils.constants import (
+    EXPECTED_CART_VALUE,
+    EXPECTED_USER_LATITUDE,
+    EXPECTED_USER_LONGITUDE,
+    EXPECTED_VENUE_SLUG,
+)
 from locust import HttpUser, task, between
 
 
@@ -8,9 +14,9 @@ class DeliveryPriceUser(HttpUser):
     @task
     def get_delivery_price(self):
         params = {
-            "venue_slug": "home-assignment-venue-helsinki",
-            "cart_value": 1000,
-            "user_lat": 60.17094,
-            "user_lon": 24.93087,
+            "venue_slug": EXPECTED_VENUE_SLUG,
+            "cart_value": EXPECTED_CART_VALUE,
+            "user_lat": EXPECTED_USER_LATITUDE,
+            "user_lon": EXPECTED_USER_LONGITUDE,
         }
         self.client.get("/api/v1/delivery-order-price", params=params)

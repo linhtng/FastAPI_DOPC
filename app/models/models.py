@@ -43,8 +43,8 @@ class DeliveryPriceResponse(BaseModel):
 
 
 class GPSCoordinates(BaseModel):
-    longitude: float = Field()
-    latitude: float = Field()
+    longitude: float = Field(ge=MIN_LON, le=MAX_LON)
+    latitude: float = Field(ge=MIN_LAT, le=MAX_LAT)
 
     @property
     def coordinates(self) -> Tuple[float, float]:
