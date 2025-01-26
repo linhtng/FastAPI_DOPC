@@ -2,6 +2,16 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 from .coordinates import GPSCoordinates
 
+"""Models mapping Venue API responses.
+
+Endpoints:
+- /static/{venue_id} -> VenueStatic
+- /dynamic/{venue_id} -> VenueDynamic
+
+DeliverySpecs and DistanceRange model the fee calculation rules
+returned by the dynamic endpoint.
+"""
+
 class DistanceRange(BaseModel):
     min: int = Field(..., ge=0, description="Minimum distance in meters")
     max: int = Field(

@@ -4,7 +4,6 @@ from app.utils.constants import EARTH_RADIUS
 
 
 class DistanceCalculator:
-    @staticmethod
     def _calculate_haversine(
         location_a: GPSCoordinates, location_b: GPSCoordinates
     ) -> int:

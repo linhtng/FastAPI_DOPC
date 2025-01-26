@@ -3,6 +3,11 @@ from typing import Tuple
 from pydantic import BaseModel, Field
 from app.utils.constants import MIN_LAT, MIN_LON, MAX_LAT, MAX_LON
 
+
+"""Geographic coordinates model for delivery distance calculations.
+Used for business logic around distance-based delivery fees.
+Handles coordinate validation and radian conversion for distance calculations.
+"""
 class GPSCoordinates(BaseModel):
     longitude: float = Field(ge=MIN_LON, le=MAX_LON)
     latitude: float = Field(ge=MIN_LAT, le=MAX_LAT)
