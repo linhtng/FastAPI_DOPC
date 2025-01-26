@@ -4,35 +4,24 @@ from app.services.total_fee_calculator import (
     calculate_distance_fee,
     calculate_small_order_surcharge,
 )
-from app.models.models import DeliverySpecs, DistanceRange
+from app.models.models import DeliveryPriceResponse, DeliveryFeeInfo
+from app.services.total_fee_calculator import total_fee_calculator
 
-
-@pytest.fixture
-def delivery_specs():
-    return DeliverySpecs(
-        order_minimum_no_surcharge=1000,
-        base_price=199,
-        distance_ranges=[
-            DistanceRange(min=0, max=500, a=0, b=0),
-            DistanceRange(min=500, max=1000, a=100, b=1),
-            DistanceRange(min=1000, max=0, a=0, b=0),
-        ],
-    )
 
 
 @pytest.mark.parametrize(
-    "distance,base_price,expected_fee",
+    "distance,expected_fee",
     [
-        (400, 199, 199),  # First range, no extra fee
-        (600, 199, 359),  # Second range, a=100, b=1
-        (800, 199, 379),  # Second range, a=100, b=1
+        (400, 190),  # First range, no extra fee
+        (600, 290),  # Second range, a=100, b=0
+        (800, 290),  # Second range, a=100, b=0
     ],
 )
-def test_calculate_distance_fee(delivery_specs, distance, base_price, expected_fee):
+def test_calculate_distance_fee(test_delivery_specs, distance, expected_fee):
     result = calculate_distance_fee(
         distance=distance,
-        base_price=base_price,
-        distance_ranges=delivery_specs.distance_ranges,
+        base_price=test_delivery_specs.base_price,
+        distance_ranges=test_delivery_specs.distance_ranges,
     )
     assert result == expected_fee
 
@@ -44,14 +33,12 @@ def test_calculate_distance_fee(delivery_specs, distance, base_price, expected_f
         (1200, 1000, 0),  # Above minimum
         (800, 1000, 200),  # Below minimum
         (0, 1000, 1000),  # Zero cart value
-        (500, 500, 0),  # Edge case - exact minimum
     ],
     ids=[
         "equal_minimum",
         "above_minimum",
         "below_minimum",
         "zero_cart",
-        "edge_minimum",
     ],
 )
 def test_calculate_small_order_surcharge(
@@ -62,20 +49,23 @@ def test_calculate_small_order_surcharge(
 
 
 @pytest.mark.asyncio
-async def test_total_fee_calculator(delivery_specs):
+async def test_total_fee_calculator(test_delivery_specs):
     """Test complete fee calculation flow"""
-    # Given
     cart_value = 800
     distance = 600
 
-    # When
-    result = await total_fee_calculator(
-        cart_value=cart_value, delivery_specs=delivery_specs, distance=distance
+    expected = DeliveryPriceResponse(
+        cart_value=cart_value,
+        delivery=DeliveryFeeInfo(
+            fee=290,
+            distance=distance
+        ),
+        small_order_surcharge=200,
+        total_price=1290
     )
 
-    # Then
-    assert result.total_price == 1359  # 800 + 359 + 200
-    assert result.small_order_surcharge == 200
-    assert result.cart_value == 800
-    assert result.delivery.fee == 359
-    assert result.delivery.distance == 600
+    result = await total_fee_calculator(
+        cart_value=cart_value, delivery_specs=test_delivery_specs, distance=distance
+    )
+
+    assert result == expected

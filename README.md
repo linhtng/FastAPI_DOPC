@@ -81,7 +81,7 @@ pip install -r requirements.txt
 
 Run the server (`--reload` automatically restarts the server when there are changes in the code):
 ```
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8080
 ```
 
 The API documentation is available in http://127.0.0.1:8080/docs.
@@ -92,7 +92,7 @@ pytest -v --capture=no --verbose
 ```
 
 #### Performance Test
-In another terminal window, repeate the "Setting things up" steps then run locust script:
+In another terminal window, repeate the "Setting things up" steps, then run locust script:
 ```
 sh run_load_test.sh
 ```
