@@ -25,6 +25,7 @@ USERS=3
 SPAWN_RATE=1
 RUN_TIME=10s
 REQUEST_RATE=2  # requests per second
+HOST=http://127.0.0.1:8080
 
 echo "Starting load test..."
 echo "Configuration:"
@@ -43,6 +44,7 @@ locust -f locustfile.py \
     --users $USERS \
     --spawn-rate $SPAWN_RATE \
     --run-time $RUN_TIME \
+    --host $HOST \
     --csv=load_test_results/load_test_$(date +%Y%m%d_%H%M%S) \
     --only-summary | tee load_test_results/latest_run.log
 

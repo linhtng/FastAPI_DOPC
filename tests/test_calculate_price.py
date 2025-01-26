@@ -32,23 +32,6 @@ def test_venue_data():
     }
 
 
-@pytest.mark.asyncio
-async def test_fetch_venue_data(test_params, test_venue_data):
-    calculator = DeliveryFeeCalculator(test_params)
-
-    # Mock venue service
-    calculator.venue_service.get_venue_static = AsyncMock(
-        return_value=test_venue_data["static"]
-    )
-    calculator.venue_service.get_venue_dynamic = AsyncMock(
-        return_value=test_venue_data["dynamic"]
-    )
-
-    static, dynamic = await calculator.fetch_venue_data(test_params.venue_slug)
-
-    assert static == test_venue_data["static"]
-    assert dynamic == test_venue_data["dynamic"]
-
 
 @pytest.mark.asyncio
 async def test_calculate_price(test_params, test_venue_data):

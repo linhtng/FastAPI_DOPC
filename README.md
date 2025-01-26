@@ -8,7 +8,7 @@ Implement an HTTP API (single GET endpoint) which calculates the delivery fee ba
 #### Request
 Example: 
 ```
-curl http://localhost:8000/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=60.17094&user_lon=24.93087
+curl http://localhost:8080/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=60.17094&user_lon=24.93087
 ```
 Query Parameters (**all are required**):
 * `venue_slug` (string): The unique identifier (slug) for the venue from which the delivery order will be placed
@@ -40,7 +40,7 @@ Run the app:
 make
 ```
 
-The API documentation is available in http://127.0.0.1:8000/docs. Here you can test all endpoints directly from your browser and try out requests with different parameters.
+The API documentation is available in http://127.0.0.1:8080/docs. Here you can test all endpoints directly from your browser and try out requests with different parameters.
 Alternatively, you can launch Postman and send request like the example above.
 
 #### Tests
@@ -84,7 +84,7 @@ Run the server (`--reload` automatically restarts the server when there are chan
 uvicorn app.main:app --reload
 ```
 
-The API documentation is available in http://127.0.0.1:8000/docs.
+The API documentation is available in http://127.0.0.1:8080/docs.
 
 #### Tests
 ```
