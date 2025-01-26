@@ -84,10 +84,25 @@ def test_delivery_specs():
         order_minimum_no_surcharge=EXPECTED_MIN_ORDER_NO_SURCHARGE,
         base_price=EXPECTED_BASE_PRICE,
         distance_ranges=[
-            DistanceRange(min=0, max=500, a=0, b=0),
-            DistanceRange(min=500, max=1000, a=100, b=0),
-            DistanceRange(min=1000, max=0, a=0, b=0),
-        ],
+            {
+                "min": 0,
+                "max": 500,
+                "a": 0,
+                "b": 0
+            },
+            {
+                "min": 500,
+                "max": 1000,
+                "a": 100,
+                "b": 0
+            },
+            {
+                "min": 1000,
+                "max": 0,
+                "a": 0,
+                "b": 0
+            }
+        ]
     )
 
 
