@@ -50,11 +50,16 @@ make pytest
 
 #### Performance Test
 
-Visit: 
+To test on the browser, visit: 
 ```
 http://localhost:8089/
 ```
 Change number of users/ramp up if you wish, then start testing.
+
+To test using CLI, run:
+```
+make load-test
+```
 
 ### Without Docker
 **Prerequisites**

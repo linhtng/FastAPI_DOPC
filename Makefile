@@ -1,4 +1,4 @@
-.PHONY: run test clean re
+.PHONY: run pytest load-test clean re
 
 
 all: run
@@ -10,6 +10,10 @@ run:
 # Test
 pytest:
 	docker compose run dopc pytest -v --capture=no --verbose
+
+load-test:
+	docker compose up -d dopc
+	docker compose exec dopc ./run_load_test.sh
 
 # Stop the services
 clean:

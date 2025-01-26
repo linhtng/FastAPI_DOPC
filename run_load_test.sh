@@ -1,8 +1,9 @@
 #!/bin/bash
 
+
 # Check if locust is installed
 check_locust() {
-    if ! command -v locust &> /dev/null; then
+    if ! which locust > /dev/null 2>&1; then
         echo "Error: Locust is not installed"
         echo "Install it using: pip install locust"
         exit 1
