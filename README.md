@@ -1,4 +1,3 @@
-# Wolt Summer 2025 Engineering Internships
 # Python Delivery Order Price Calculator (DOPC) API
 Let's build the Delivery Order Price Calculator (DOPC) API using Python and [FastAPI](https://fastapi.tiangolo.com/) as the web framework.
 
